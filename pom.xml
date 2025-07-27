@@ -32,7 +32,7 @@
 	</developers>
 	<scm>
 		<connection>scm:git:git://github.com/ilyasdotdev/spring-boot-microservice</connection>
-		<developerConnection>http://scm:git%3Agit@github.com/ilyasdotdev</developerConnection>
+		<developerConnection>http://scm:git:git@github.com/ilyasdotdev</developerConnection>
 		<url>scm:git:git://github.com/ilyasdotdev/spring-boot-microservice</url>
 	</scm>
 	<properties>
