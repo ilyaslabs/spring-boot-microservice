@@ -1,6 +1,6 @@
-package io.github.ilyasdotdev.microservice.exception;
+package io.github.ilyaslabs.microservice.exception;
 
-import io.github.ilyasdotdev.microservice.BaseTest;
+import io.github.ilyaslabs.microservice.BaseTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestPropertySource;
 
@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @TestPropertySource(
         properties = {
-                "io.github.ilyasdotdev.microservice.exception.unhandledExceptionMessage=Test Exception Message"
+                "io.github.ilyaslabs.microservice.exception.unhandledExceptionMessage=Test Exception Message"
         }
 )
 class GlobalExceptionHandlerMessageTest extends BaseTest {

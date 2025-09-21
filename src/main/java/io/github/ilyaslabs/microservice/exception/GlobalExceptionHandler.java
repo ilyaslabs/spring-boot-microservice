@@ -1,4 +1,4 @@
-package io.github.ilyasdotdev.microservice.exception;
+package io.github.ilyaslabs.microservice.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class GlobalExceptionHandler {
 
     }
 
-    @Value("${io.github.ilyasdotdev.microservice.exception.unhandledExceptionMessage:Something happened that we didn't expect}")
+    @Value("${io.github.ilyaslabs.microservice.exception.unhandledExceptionMessage:Something happened that we didn't expect}")
     private String UnhandledExceptionMessage;
 
     /**
@@ -50,6 +51,19 @@ public class GlobalExceptionHandler {
                 .status(exception.getStatus())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PROBLEM_JSON_VALUE)
                 .body(exception.toResponseBody());
+    }
+
+    /**
+     * Handles NoResourceFoundException and returns a ResponseEntity with not found status and response body.
+     *
+     * @param exception The NoResourceFoundException thrown
+     * @return The ResponseEntity with not found status and response body
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<HttpResponseException.ResponseBody> handleNoResourceFoundException(NoResourceFoundException exception) {
+        log.warn("Resource not found: {}", exception.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HttpResponseException.ofNotFound("404 Not Found")
+                .toResponseBody());
     }
 
     /**

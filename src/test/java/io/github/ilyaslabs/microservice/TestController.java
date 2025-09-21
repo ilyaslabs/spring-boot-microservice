@@ -1,4 +1,4 @@
-package io.github.ilyasdotdev.microservice;
+package io.github.ilyaslabs.microservice;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -34,7 +34,7 @@ class TestController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping
+    @GetMapping("/unhandled")
     void unhandled() {
         // This endpoint is intentionally left unhandled to demonstrate exception handling
         throw new RuntimeException("This is an unhandled exception");

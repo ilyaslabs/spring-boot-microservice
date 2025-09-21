@@ -13,11 +13,12 @@ A library to provide basic features which are required in a microservice applica
 Add dependency in your project.
 
 ```xml
-    <dependency>
-        <groupId>io.github.ilyasdotdev</groupId>
-        <artifactId>spring-boot-microservice</artifactId>
-        <version>1.0.0</version>
-    </dependency>
+
+<dependency>
+    <groupId>io.github.ilyaslabs</groupId>
+    <artifactId>spring-boot-microservice</artifactId>
+    <version>2.0.0</version>
+</dependency>
 ```
 
 ## Returning custom error response
@@ -43,4 +44,4 @@ public static HttpResponseException of(HttpStatus status, String message) {
 }
 ```
 
-Feel free to browse the code to see all the available methods [here](https://github.com/ilyasdotdev/spring-boot-microservice/blob/master/src/main/java/io/github/ilyasdotdev/microservice/exception/HttpResponseException.java)
+Feel free to browse the code to see all the available methods [here](https://github.com/ilyaslabs/spring-boot-microservice/blob/main/src/main/java/io/github/ilyaslabs/microservice/exception/HttpResponseException.java)

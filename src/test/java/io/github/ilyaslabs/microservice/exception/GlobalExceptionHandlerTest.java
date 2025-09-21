@@ -1,6 +1,6 @@
-package io.github.ilyasdotdev.microservice.exception;
+package io.github.ilyaslabs.microservice.exception;
 
-import io.github.ilyasdotdev.microservice.BaseTest;
+import io.github.ilyaslabs.microservice.BaseTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
@@ -63,5 +63,16 @@ class GlobalExceptionHandlerTest extends BaseTest {
         mockMvc.perform(post("/api/test/unhandled"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.message").value("Something happened that we didn't expect"));
+    }
+
+    /**
+     * Test the response when an invalid path is accessed.
+     * @throws Exception
+     */
+    @Test
+    void testNotFoundResponse() throws Exception {
+        mockMvc.perform(post("/api/invalid-path"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("404 Not Found"));
     }
 }

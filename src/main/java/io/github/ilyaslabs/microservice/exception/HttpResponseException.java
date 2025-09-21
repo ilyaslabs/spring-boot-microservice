@@ -1,9 +1,8 @@
-package io.github.ilyasdotdev.microservice.exception;
+package io.github.ilyaslabs.microservice.exception;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.Instant;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package io.github.ilyasdotdev.microservice;
+package io.github.ilyaslabs.microservice;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
