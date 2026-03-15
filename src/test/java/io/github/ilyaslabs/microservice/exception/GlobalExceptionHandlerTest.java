@@ -4,6 +4,7 @@ import io.github.ilyaslabs.microservice.BaseTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -74,5 +75,13 @@ class GlobalExceptionHandlerTest extends BaseTest {
         mockMvc.perform(post("/api/invalid-path"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("404 Not Found"));
+    }
+
+    @Test
+    void testPathParamValidation() throws Exception {
+        mockMvc.perform(get("/api/test/param/123"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Validation failed"))
+                .andExpect(jsonPath("$.fields.id").value("Id must be at least 4 characters"));
     }
 }

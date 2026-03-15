@@ -8,14 +8,19 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.method.ParameterValidationResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Global exception handler for the application.
@@ -135,6 +140,30 @@ public class GlobalExceptionHandler {
                                 "Invalid request body"
                         ).toResponseBody()
                 );
+    }
+
+    /**
+     * Handles exceptions of type HandlerMethodValidationException and generates a ResponseEntity
+     * containing the details of validation errors and a proper HTTP status code.
+     *
+     * @param ex The HandlerMethodValidationException instance containing validation error details.
+     * @return A ResponseEntity with a BAD_REQUEST status and a body containing validation error messages.
+     */
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<HttpResponseException.ResponseBody> handleValidationException(HandlerMethodValidationException ex) {
+        List<ParameterValidationResult> parameterValidationResults = ex.getParameterValidationResults();
+        Map<String, String> errors = parameterValidationResults.stream()
+                .collect(Collectors.toMap(
+                        result -> result.getMethodParameter().getParameterName(),
+                        result ->
+                                Optional.ofNullable(result.getResolvableErrors().getFirst().getDefaultMessage())
+                                        .orElse("Validation failed")
+                ));
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PROBLEM_JSON_VALUE).body(HttpResponseException.ofBadRequest(
+                                errors)
+                        .toResponseBody());
     }
 
 }
