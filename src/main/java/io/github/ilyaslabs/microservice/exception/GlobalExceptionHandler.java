@@ -151,6 +151,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(HandlerMethodValidationException.class)
     public ResponseEntity<HttpResponseException.ResponseBody> handleValidationException(HandlerMethodValidationException ex) {
+        log.debug("Validation failed", ex);
         List<ParameterValidationResult> parameterValidationResults = ex.getParameterValidationResults();
         Map<String, String> errors = parameterValidationResults.stream()
                 .collect(Collectors.toMap(
