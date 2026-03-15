@@ -61,7 +61,7 @@ class GlobalExceptionHandlerTest extends BaseTest {
     @Test
     void testUnhandledExceptionResponse() throws Exception {
 
-        mockMvc.perform(post("/api/test/unhandled"))
+        mockMvc.perform(get("/api/test/unhandled"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.message").value("Something happened that we didn't expect"));
     }
@@ -72,7 +72,7 @@ class GlobalExceptionHandlerTest extends BaseTest {
      */
     @Test
     void testNotFoundResponse() throws Exception {
-        mockMvc.perform(post("/api/invalid-path"))
+        mockMvc.perform(get("/api/invalid-path"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("404 Not Found"));
     }
