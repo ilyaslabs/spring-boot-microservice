@@ -4,7 +4,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/test")
+@Validated
 class TestController {
 
     record Request(
@@ -44,6 +47,11 @@ class TestController {
 
     @GetMapping("/param/{id}")
     ResponseEntity<Void> param(@PathVariable @Size(message = "Id must be at least 4 characters", min = 4) String id) {
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/param2")
+    ResponseEntity<Void> param2(@Pattern(regexp = "^[a-zA-Z]+$", message = "Name must contain only letters") String name) {
         return ResponseEntity.ok().build();
     }
 }

@@ -84,4 +84,12 @@ class GlobalExceptionHandlerTest extends BaseTest {
                 .andExpect(jsonPath("$.message").value("Validation failed"))
                 .andExpect(jsonPath("$.fields.id").value("Id must be at least 4 characters"));
     }
+
+    @Test
+    void testMultipleParamsValidation() throws Exception {
+        mockMvc.perform(get("/api/test/param2").param("name", ""))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Validation failed"))
+                .andExpect(jsonPath("$.fields.name").value("Name must contain only letters"));
+    }
 }

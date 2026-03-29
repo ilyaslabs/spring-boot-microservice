@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+import jakarta.validation.ConstraintViolationException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -122,6 +123,27 @@ public class GlobalExceptionHandler {
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PROBLEM_JSON_VALUE).body(HttpResponseException.ofBadRequest(
                                 errors)
                         .toResponseBody());
+    }
+
+    /**
+     * Handles ConstraintViolationException and returns a ResponseEntity with appropriate status code and response body.
+     *
+     * @param exception The ConstraintViolationException thrown
+     * @return The ResponseEntity with status and response body
+     */
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<HttpResponseException.ResponseBody> handleConstraintViolationException(ConstraintViolationException exception) {
+        log.debug("Validation failed", exception);
+        Map<String, String> errors = new HashMap<>();
+        exception.getConstraintViolations().forEach(violation -> {
+            String propertyPath = violation.getPropertyPath().toString();
+            String fieldName = propertyPath.substring(propertyPath.lastIndexOf('.') + 1);
+            errors.put(fieldName, violation.getMessage());
+        });
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PROBLEM_JSON_VALUE)
+                .body(HttpResponseException.ofBadRequest(errors).toResponseBody());
     }
 
     /**
