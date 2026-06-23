@@ -219,13 +219,15 @@ public class HttpResponseException extends RuntimeException {
      * @param fields a map of field names to error messages indicating validation failures
      * @param timestamp the timestamp of when the response was created
      * @param data additional data related to the exception
+     * @param traceid current request trace id
      */
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public record ResponseBody(
             String message,
             Map<String, String> fields,
             Instant timestamp,
-            Object data
+            Object data,
+            String traceid
     ) {
     }
 
@@ -235,6 +237,16 @@ public class HttpResponseException extends RuntimeException {
      * @return A ResponseBody containing the message, errors, and timestamp of the exception.
      */
     public ResponseBody toResponseBody() {
-        return new ResponseBody(message, errors, timestamp, data);
+        return toResponseBody(null);
+    }
+
+    /**
+     * Converts the exception details to a ResponseBody object with trace id.
+     *
+     * @param traceid current request trace id
+     * @return A ResponseBody containing the message, errors, timestamp, and trace id of the exception.
+     */
+    public ResponseBody toResponseBody(String traceid) {
+        return new ResponseBody(message, errors, timestamp, data, traceid);
     }
 }

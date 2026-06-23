@@ -4,6 +4,8 @@ import io.github.ilyaslabs.microservice.BaseTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.context.TestPropertySource;
 
+import static org.hamcrest.Matchers.emptyOrNullString;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -29,6 +31,7 @@ class GlobalExceptionHandlerMessageTest extends BaseTest {
     void testUnhandledExceptionResponse() throws Exception {
         mockMvc.perform(get("/api/test/unhandled"))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.message").value("Test Exception Message"));
+                .andExpect(jsonPath("$.message").value("Test Exception Message"))
+                .andExpect(jsonPath("$.traceid").value(not(emptyOrNullString())));
     }
 }

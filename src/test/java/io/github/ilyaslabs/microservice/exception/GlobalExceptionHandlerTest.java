@@ -4,6 +4,8 @@ import io.github.ilyaslabs.microservice.BaseTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+import static org.hamcrest.Matchers.emptyOrNullString;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -33,7 +35,8 @@ class GlobalExceptionHandlerTest extends BaseTest {
                                 .content(request)
                 ).andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Validation failed"))
-                .andExpect(jsonPath("$.fields.name").value("Name must be between 3 and 50 characters"));
+                .andExpect(jsonPath("$.fields.name").value("Name must be between 3 and 50 characters"))
+                .andExpect(jsonPath("$.traceid").value(not(emptyOrNullString())));
     }
 
     /**
@@ -63,7 +66,8 @@ class GlobalExceptionHandlerTest extends BaseTest {
 
         mockMvc.perform(get("/api/test/unhandled"))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.message").value("Something happened that we didn't expect"));
+                .andExpect(jsonPath("$.message").value("Something happened that we didn't expect"))
+                .andExpect(jsonPath("$.traceid").value(not(emptyOrNullString())));
     }
 
     /**
@@ -74,7 +78,8 @@ class GlobalExceptionHandlerTest extends BaseTest {
     void testNotFoundResponse() throws Exception {
         mockMvc.perform(get("/api/invalid-path"))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message").value("404 Not Found"));
+                .andExpect(jsonPath("$.message").value("404 Not Found"))
+                .andExpect(jsonPath("$.traceid").value(not(emptyOrNullString())));
     }
 
     @Test
@@ -82,7 +87,8 @@ class GlobalExceptionHandlerTest extends BaseTest {
         mockMvc.perform(get("/api/test/param/123"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Validation failed"))
-                .andExpect(jsonPath("$.fields.id").value("Id must be at least 4 characters"));
+                .andExpect(jsonPath("$.fields.id").value("Id must be at least 4 characters"))
+                .andExpect(jsonPath("$.traceid").value(not(emptyOrNullString())));
     }
 
     @Test
@@ -90,6 +96,7 @@ class GlobalExceptionHandlerTest extends BaseTest {
         mockMvc.perform(get("/api/test/param2").param("name", ""))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Validation failed"))
-                .andExpect(jsonPath("$.fields.name").value("Name must contain only letters"));
+                .andExpect(jsonPath("$.fields.name").value("Name must contain only letters"))
+                .andExpect(jsonPath("$.traceid").value(not(emptyOrNullString())));
     }
 }

@@ -1,12 +1,14 @@
 package io.github.ilyaslabs.microservice.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import io.micrometer.tracing.Tracer;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.method.ParameterValidationResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -33,12 +35,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    /**
-     * Default constructor for GlobalExceptionHandler.
-     * It can be used to initialize any required beans or properties.
-     */
-    public GlobalExceptionHandler() {
+    private final Tracer tracer;
 
+    /**
+     * Creates a new GlobalExceptionHandler with optional tracer support.
+     */
+    public GlobalExceptionHandler(@Autowired(required = false) Tracer tracer) {
+        this.tracer = tracer;
     }
 
     @Value("${io.github.ilyaslabs.microservice.exception.unhandledExceptionMessage:Something happened that we didn't expect}")
@@ -56,7 +59,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(exception.getStatus())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PROBLEM_JSON_VALUE)
-                .body(exception.toResponseBody());
+                .body(exception.toResponseBody(resolveCurrentTraceId()));
     }
 
     /**
@@ -69,7 +72,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<HttpResponseException.ResponseBody> handleNoResourceFoundException(NoResourceFoundException exception) {
         log.warn("Resource not found: {}", exception.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HttpResponseException.ofNotFound("404 Not Found")
-                .toResponseBody());
+                .toResponseBody(resolveCurrentTraceId()));
     }
 
     /**
@@ -84,7 +87,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(HttpResponseException.ofInternalServerError(
                         UnhandledExceptionMessage
                 )
-                .toResponseBody());
+                .toResponseBody(resolveCurrentTraceId()));
     }
 
     /**
@@ -97,7 +100,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<HttpResponseException.ResponseBody> handleException(NoHandlerFoundException exception) {
         log.warn("invalid request path for {}", exception.getRequestURL());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(HttpResponseException.ofNotFound()
-                .toResponseBody());
+                .toResponseBody(resolveCurrentTraceId()));
     }
 
 
@@ -122,7 +125,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PROBLEM_JSON_VALUE).body(HttpResponseException.ofBadRequest(
                                 errors)
-                        .toResponseBody());
+                        .toResponseBody(resolveCurrentTraceId()));
     }
 
     /**
@@ -143,7 +146,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PROBLEM_JSON_VALUE)
-                .body(HttpResponseException.ofBadRequest(errors).toResponseBody());
+                .body(HttpResponseException.ofBadRequest(errors).toResponseBody(resolveCurrentTraceId()));
     }
 
     /**
@@ -160,7 +163,7 @@ public class GlobalExceptionHandler {
                 .body(HttpResponseException
                         .ofBadRequest(
                                 "Invalid request body"
-                        ).toResponseBody()
+                        ).toResponseBody(resolveCurrentTraceId())
                 );
     }
 
@@ -186,7 +189,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PROBLEM_JSON_VALUE).body(HttpResponseException.ofBadRequest(
                                 errors)
-                        .toResponseBody());
+                        .toResponseBody(resolveCurrentTraceId()));
+    }
+
+    private String resolveCurrentTraceId() {
+        if (tracer == null) {
+            return null;
+        }
+        var currentSpan = tracer.currentSpan();
+        if (currentSpan == null || currentSpan.context() == null) {
+            return null;
+        }
+        return currentSpan.context().traceId();
     }
 
 }
