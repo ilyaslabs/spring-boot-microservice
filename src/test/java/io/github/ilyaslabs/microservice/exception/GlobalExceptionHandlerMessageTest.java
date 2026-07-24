@@ -32,6 +32,6 @@ class GlobalExceptionHandlerMessageTest extends BaseTest {
         mockMvc.perform(get("/api/test/unhandled"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.message").value("Test Exception Message"))
-                .andExpect(jsonPath("$.traceid").value(not(emptyOrNullString())));
+                .andExpect(jsonPath("$.traceId").value(not(emptyOrNullString())));
     }
 }

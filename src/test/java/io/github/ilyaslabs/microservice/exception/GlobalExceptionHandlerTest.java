@@ -36,7 +36,7 @@ class GlobalExceptionHandlerTest extends BaseTest {
                 ).andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Validation failed"))
                 .andExpect(jsonPath("$.fields.name").value("Name must be between 3 and 50 characters"))
-                .andExpect(jsonPath("$.traceid").value(not(emptyOrNullString())));
+                .andExpect(jsonPath("$.traceId").value(not(emptyOrNullString())));
     }
 
     /**
@@ -67,7 +67,7 @@ class GlobalExceptionHandlerTest extends BaseTest {
         mockMvc.perform(get("/api/test/unhandled"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.message").value("Something happened that we didn't expect"))
-                .andExpect(jsonPath("$.traceid").value(not(emptyOrNullString())));
+                .andExpect(jsonPath("$.traceId").value(not(emptyOrNullString())));
     }
 
     /**
@@ -79,7 +79,7 @@ class GlobalExceptionHandlerTest extends BaseTest {
         mockMvc.perform(get("/api/invalid-path"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("404 Not Found"))
-                .andExpect(jsonPath("$.traceid").value(not(emptyOrNullString())));
+                .andExpect(jsonPath("$.traceId").value(not(emptyOrNullString())));
     }
 
     @Test
@@ -88,7 +88,7 @@ class GlobalExceptionHandlerTest extends BaseTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Validation failed"))
                 .andExpect(jsonPath("$.fields.id").value("Id must be at least 4 characters"))
-                .andExpect(jsonPath("$.traceid").value(not(emptyOrNullString())));
+                .andExpect(jsonPath("$.traceId").value(not(emptyOrNullString())));
     }
 
     @Test
@@ -97,6 +97,6 @@ class GlobalExceptionHandlerTest extends BaseTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Validation failed"))
                 .andExpect(jsonPath("$.fields.name").value("Name must contain only letters"))
-                .andExpect(jsonPath("$.traceid").value(not(emptyOrNullString())));
+                .andExpect(jsonPath("$.traceId").value(not(emptyOrNullString())));
     }
 }
